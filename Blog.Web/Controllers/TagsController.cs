@@ -1,6 +1,7 @@
 ﻿using Blog.Web.Data;
 using Blog.Web.Models.Domain;
 using Blog.Web.Models.ViewModels;
+using Blog.Web.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,11 +9,12 @@ namespace Blog.Web.Controllers
 {
     public class TagsController : Controller
     {
-        private readonly BlogDbContext context;
-        public TagsController(BlogDbContext context)
+		private readonly ITagRepository tagRepository;
+
+		public TagsController(ITagRepository tagRepository)
         {
-            this.context = context;
-        }
+			this.tagRepository = tagRepository;
+		}
 
         [HttpGet]
         public IActionResult Add() => View();
@@ -20,24 +22,22 @@ namespace Blog.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Add(AddTagRequest addTagRequest)
         {
-            await context.Tags.AddAsync(new Tag
+            await tagRepository.AddAsync(new Tag
             {
                 Name = addTagRequest.Name,
                 DisplayName = addTagRequest.DisplayName
             });
-            await context.SaveChangesAsync();
 
             return RedirectToAction(nameof(List));
         }
 
         [HttpGet]
-        public async Task<IActionResult> List() => View(await context.Tags.ToListAsync());
+        public async Task<IActionResult> List() => View(await tagRepository.GetAllAsync());
 
         [HttpGet]
         public async Task<IActionResult> Edit(Guid id)
         {
-            var tag = await context.Tags
-                .FirstOrDefaultAsync(x => x.Id == id);
+            var tag = await tagRepository.GetAsync(id);
 
             if (tag is not null)
             {
@@ -57,34 +57,35 @@ namespace Blog.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(EditTagRequest editTagRequest)
         {
-            var tag = await context.Tags
-                .FirstOrDefaultAsync(x => x.Id == editTagRequest.Id);
-
-            if (tag is not null)
+            var updatedTag = await tagRepository.UpdateAsync(new Tag
             {
-                tag.Name = editTagRequest.Name;
-                tag.DisplayName = editTagRequest.DisplayName;
+                Id = editTagRequest.Id,
+                Name = editTagRequest.Name,
+                DisplayName = editTagRequest.DisplayName
+            });
 
-                await context.SaveChangesAsync();
-
+            if (updatedTag is not null)
+            {
                 return RedirectToAction(nameof(List));
             }
+            else
+            {
 
-            return View(editTagRequest);
+            }
+
+            return RedirectToAction(nameof(Edit), new { id = editTagRequest.Id });
         }
 
         [HttpPost]
         public async Task<IActionResult> Delete(EditTagRequest editTagRequest)
         {
-            var tag = await context.Tags
-                .FirstOrDefaultAsync(x => x.Id == editTagRequest.Id);
-            if (tag is not null)
+            var deletedTag = await tagRepository.DeleteAsync(editTagRequest.Id);
+            
+            if(deletedTag is not null)
             {
-                context.Tags.Remove(tag);
-                await context.SaveChangesAsync();
-
                 return RedirectToAction(nameof(List));
             }
+
             return RedirectToAction(nameof(Edit), new { id = editTagRequest.Id });
         }
     }
