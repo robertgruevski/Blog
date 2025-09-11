@@ -1,10 +1,18 @@
-﻿using Blog.Web.Models.ViewModels;
+﻿using Blog.Web.Data;
+using Blog.Web.Models.Domain;
+using Blog.Web.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Blog.Web.Controllers
 {
 	public class TagsController : Controller
 	{
+		private readonly BlogDbContext context;
+		public TagsController(BlogDbContext context)
+		{
+			this.context = context;
+		}
+
 		[HttpGet]
 		public IActionResult Add()
 		{
@@ -14,8 +22,12 @@ namespace Blog.Web.Controllers
         [HttpPost]
         public IActionResult Add(AddTagRequest addTagRequest)
         {
-			var name = addTagRequest.Name;
-			var displayName = addTagRequest.DisplayName;
+			context.Tags.Add(new Tag
+			{
+                Name = addTagRequest.Name,
+                DisplayName = addTagRequest.DisplayName
+            });
+			context.SaveChanges();
 
             return View("Add");
         }
