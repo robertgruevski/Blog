@@ -13,6 +13,7 @@
 				<td>Id</td>
 				<td>Heading</td>
 				<td>Tags</td>
+				<td></td>
 			</tr>
 		</thead>
 		<tbody>
@@ -28,6 +29,14 @@
 								<span class="badge bg-secondary me-1">@tag.Name</span>
 							}
 						</div>
+					</td>
+					<td>
+						<a asp-area=""
+						   asp-controller="Posts"
+						   asp-action="Edit"
+						   asp-route-id="@post.Id">
+							Edit
+						</a>
 					</td>
 				</tr>
 			}

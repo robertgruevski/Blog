@@ -27,15 +27,9 @@ namespace Blog.Web.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<Post>> GetAllAsync()
-        {
-            return await context.Posts.Include(x => x.Tags).ToListAsync();
-        }
+        public async Task<IEnumerable<Post>> GetAllAsync() => await context.Posts.Include(x => x.Tags).ToListAsync();
 
-        public Task<Post?> GetAsync(Guid id)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<Post?> GetAsync(Guid id) => await context.Posts.Include(x => x.Tags).FirstOrDefaultAsync(x => x.Id == id);
 
         public Task<Post?> UpdateAsync(Post post)
         {

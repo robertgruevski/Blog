@@ -9,13 +9,13 @@ namespace Blog.Web.Controllers
     public class PostsController : Controller
     {
         private readonly ITagRepository tagRepository;
-		private readonly IPostRepository postRepository;
+        private readonly IPostRepository postRepository;
 
-		public PostsController(ITagRepository tagRepository, IPostRepository postRepository)
+        public PostsController(ITagRepository tagRepository, IPostRepository postRepository)
         {
             this.tagRepository = tagRepository;
-			this.postRepository = postRepository;
-		}
+            this.postRepository = postRepository;
+        }
 
         [HttpGet]
         public async Task<IActionResult> Add()
@@ -63,7 +63,7 @@ namespace Blog.Web.Controllers
 
             post.Tags = selectedTags;
 
-            await postRepository.AddAsync(post);            
+            await postRepository.AddAsync(post);
 
             return RedirectToAction(nameof(Add));
         }
@@ -72,8 +72,38 @@ namespace Blog.Web.Controllers
         public async Task<IActionResult> List()
         {
             var posts = await postRepository.GetAllAsync();
-            
+
             return View(posts);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(Guid id)
+        {
+            var post = await postRepository.GetAsync(id);
+            var tagsDomainModel = await tagRepository.GetAllAsync();
+
+            if (post is not null)
+                return View(new EditPostRequest
+                {
+                    Id = post.Id,
+                    Heading = post.Heading,
+                    PageTitle = post.PageTitle,
+                    Content = post.Content,
+                    ShortDescription = post.ShortDescription,
+                    FeaturedImageUrl = post.FeaturedImageUrl,
+                    UrlHandle = post.UrlHandle,
+                    PublishedDate = post.PublishedDate,
+                    Author = post.Author,
+                    Visible = post.Visible,
+                    Tags = tagsDomainModel.Select(x => new SelectListItem
+                    {
+                        Text = x.Name,
+                        Value = x.Id.ToString()
+                    }),
+                    SelectedTags = post.Tags.Select(x => x.Id.ToString()).ToArray()
+                });
+
+            return View(null);
         }
     }
 }
