@@ -2,6 +2,7 @@
 using Blog.Web.Models.Domain;
 using Blog.Web.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Blog.Web.Controllers
 {
@@ -14,31 +15,30 @@ namespace Blog.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult Add()
-        {
-            return View();
-        }
+        public IActionResult Add() => View();
 
         [HttpPost]
-        public IActionResult Add(AddTagRequest addTagRequest)
+        public async Task<IActionResult> Add(AddTagRequest addTagRequest)
         {
-            context.Tags.Add(new Tag
+            await context.Tags.AddAsync(new Tag
             {
                 Name = addTagRequest.Name,
                 DisplayName = addTagRequest.DisplayName
             });
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
             return RedirectToAction(nameof(List));
         }
 
         [HttpGet]
-        public IActionResult List() => View(context.Tags.ToList());
+        public async Task<IActionResult> List() => View(await context.Tags.ToListAsync());
 
         [HttpGet]
-        public IActionResult Edit(Guid id)
+        public async Task<IActionResult> Edit(Guid id)
         {
-            var tag = context.Tags.FirstOrDefault(x => x.Id == id);
+            var tag = await context.Tags
+                .FirstOrDefaultAsync(x => x.Id == id);
+
             if (tag is not null)
             {
                 var editTagRequest = new EditTagRequest
@@ -50,20 +50,22 @@ namespace Blog.Web.Controllers
 
                 return View(editTagRequest);
             }
+
             return View(null);
         }
 
         [HttpPost]
-        public IActionResult Edit(EditTagRequest editTagRequest)
+        public async Task<IActionResult> Edit(EditTagRequest editTagRequest)
         {
-            var tag = context.Tags.FirstOrDefault(x => x.Id == editTagRequest.Id);
+            var tag = await context.Tags
+                .FirstOrDefaultAsync(x => x.Id == editTagRequest.Id);
 
             if (tag is not null)
             {
                 tag.Name = editTagRequest.Name;
                 tag.DisplayName = editTagRequest.DisplayName;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
 
                 return RedirectToAction(nameof(List));
             }
@@ -72,13 +74,14 @@ namespace Blog.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Delete(EditTagRequest editTagRequest)
+        public async Task<IActionResult> Delete(EditTagRequest editTagRequest)
         {
-            var tag = context.Tags.FirstOrDefault(x => x.Id == editTagRequest.Id);
+            var tag = await context.Tags
+                .FirstOrDefaultAsync(x => x.Id == editTagRequest.Id);
             if (tag is not null)
             {
                 context.Tags.Remove(tag);
-                context.SaveChanges();
+                await context.SaveChangesAsync();
 
                 return RedirectToAction(nameof(List));
             }
