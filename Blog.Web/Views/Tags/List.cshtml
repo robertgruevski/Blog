@@ -8,33 +8,35 @@
 	<div class="container">
 		<h1>Tag List</h1>
 	</div>
-</div>
 
-<div class="container py-5">
-	@if (Model is not null && Model.Any())
-	{
-		<table class="table">
-			<thead>
-				<tr>
-					<th>Id</th>
-					<th>Name</th>
-					<th>Display Name</th>
-				</tr>
-			</thead>
-			<tbody>
-				@foreach (var tag in Model)
-				{
+	<div class="container py-5">
+		@if (Model is not null && Model.Any())
+		{
+			<table class="table table-striped">
+				<thead>
 					<tr>
-						<td>@tag.Id</td>
-						<td>@tag.Name</td>
-						<td>@tag.DisplayName</td>
+						<th>Id</th>
+						<th>Name</th>
+						<th>Display Name</th>
+						<th></th>
 					</tr>
-				}
-			</tbody>
-		</table>
-	}
-	else
-	{
-		<p>No tags found!</p>
-	}
+				</thead>
+				<tbody>
+					@foreach (var tag in Model)
+					{
+						<tr>
+							<td>@tag.Id</td>
+							<td>@tag.Name</td>
+							<td>@tag.DisplayName</td>
+							<td><a class="btn btn-info" asp-area="" asp-controller="Tags" asp-action="Edit" asp-route-id="@tag.Id">Edit</a></td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		}
+		else
+		{
+			<p>No tags found!</p>
+		}
+	</div>
 </div>
