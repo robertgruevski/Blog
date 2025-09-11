@@ -16,6 +16,10 @@ namespace Blog.Web.Repositories
 			this.context = context;
 		}
 
+		public async Task<IEnumerable<Tag>> GetAllAsync() => await context.Tags.ToListAsync();
+
+		public async Task<Tag?> GetAsync(Guid id) => await context.Tags.FirstOrDefaultAsync(x => x.Id == id);
+
 		public async Task<Tag> AddAsync(Tag tag)
 		{
             await context.Tags.AddAsync(tag);
@@ -38,10 +42,6 @@ namespace Blog.Web.Repositories
 
 			return null;
         }
-
-		public async Task<IEnumerable<Tag>> GetAllAsync() => await context.Tags.ToListAsync();
-
-		public async Task<Tag?> GetAsync(Guid id) => await context.Tags.FirstOrDefaultAsync(x => x.Id == id);
 
 		public async Task<Tag?> UpdateAsync(Tag tag)
 		{

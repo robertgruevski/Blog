@@ -1,6 +1,6 @@
 ﻿namespace Blog.Web.Models.Domain
 {
-	public class BlogPost
+	public class Post
 	{
 		public Guid Id { get; set; }
 		public string Heading { get; set; }
