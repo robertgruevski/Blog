@@ -35,6 +35,7 @@ namespace Blog.Web.Controllers
             return View(model);
         }
 
+        [HttpPost]
         public async Task<IActionResult> Add(AddPostRequest addPostRequest)
         {
             var post = new Post
@@ -65,6 +66,14 @@ namespace Blog.Web.Controllers
             await postRepository.AddAsync(post);            
 
             return RedirectToAction(nameof(Add));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> List()
+        {
+            var posts = await postRepository.GetAllAsync();
+            
+            return View(posts);
         }
     }
 }
