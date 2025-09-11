@@ -70,5 +70,19 @@ namespace Blog.Web.Controllers
 
             return View(editTagRequest);
         }
+
+        [HttpPost]
+        public IActionResult Delete(EditTagRequest editTagRequest)
+        {
+            var tag = context.Tags.FirstOrDefault(x => x.Id == editTagRequest.Id);
+            if (tag is not null)
+            {
+                context.Tags.Remove(tag);
+                context.SaveChanges();
+
+                return RedirectToAction(nameof(List));
+            }
+            return RedirectToAction(nameof(Edit), new { id = editTagRequest.Id });
+        }
     }
 }
