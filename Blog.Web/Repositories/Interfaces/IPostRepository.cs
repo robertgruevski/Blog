@@ -1,0 +1,17 @@
+﻿using Blog.Web.Models.Domain;
+
+namespace Blog.Web.Repositories.Interfaces
+{
+	public interface IPostRepository
+	{
+		Task<IEnumerable<Post>> GetAll();
+
+		Task<Post?> GetAsync(Guid id);
+
+		Task<Post> AddAsync(Post post);
+
+		Task<Post?> UpdateAsync(Post post);
+
+		Task<Post?> DeleteAsync(Guid id);
+	}
+}

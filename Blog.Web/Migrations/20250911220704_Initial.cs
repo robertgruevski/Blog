@@ -6,13 +6,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Blog.Web.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "BlogPosts",
+                name: "Posts",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -28,7 +28,7 @@ namespace Blog.Web.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BlogPosts", x => x.Id);
+                    table.PrimaryKey("PK_Posts", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -45,23 +45,23 @@ namespace Blog.Web.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "BlogPostTag",
+                name: "PostTag",
                 columns: table => new
                 {
-                    BlogPostsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PostsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TagsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BlogPostTag", x => new { x.BlogPostsId, x.TagsId });
+                    table.PrimaryKey("PK_PostTag", x => new { x.PostsId, x.TagsId });
                     table.ForeignKey(
-                        name: "FK_BlogPostTag_BlogPosts_BlogPostsId",
-                        column: x => x.BlogPostsId,
-                        principalTable: "BlogPosts",
+                        name: "FK_PostTag_Posts_PostsId",
+                        column: x => x.PostsId,
+                        principalTable: "Posts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_BlogPostTag_Tags_TagsId",
+                        name: "FK_PostTag_Tags_TagsId",
                         column: x => x.TagsId,
                         principalTable: "Tags",
                         principalColumn: "Id",
@@ -69,8 +69,8 @@ namespace Blog.Web.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_BlogPostTag_TagsId",
-                table: "BlogPostTag",
+                name: "IX_PostTag_TagsId",
+                table: "PostTag",
                 column: "TagsId");
         }
 
@@ -78,10 +78,10 @@ namespace Blog.Web.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "BlogPostTag");
+                name: "PostTag");
 
             migrationBuilder.DropTable(
-                name: "BlogPosts");
+                name: "Posts");
 
             migrationBuilder.DropTable(
                 name: "Tags");

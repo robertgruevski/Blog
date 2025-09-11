@@ -22,7 +22,7 @@ namespace Blog.Web.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Blog.Web.Models.Domain.BlogPost", b =>
+            modelBuilder.Entity("Blog.Web.Models.Domain.Post", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -64,7 +64,7 @@ namespace Blog.Web.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BlogPosts");
+                    b.ToTable("Posts");
                 });
 
             modelBuilder.Entity("Blog.Web.Models.Domain.Tag", b =>
@@ -86,26 +86,26 @@ namespace Blog.Web.Migrations
                     b.ToTable("Tags");
                 });
 
-            modelBuilder.Entity("BlogPostTag", b =>
+            modelBuilder.Entity("PostTag", b =>
                 {
-                    b.Property<Guid>("BlogPostsId")
+                    b.Property<Guid>("PostsId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("TagsId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("BlogPostsId", "TagsId");
+                    b.HasKey("PostsId", "TagsId");
 
                     b.HasIndex("TagsId");
 
-                    b.ToTable("BlogPostTag");
+                    b.ToTable("PostTag");
                 });
 
-            modelBuilder.Entity("BlogPostTag", b =>
+            modelBuilder.Entity("PostTag", b =>
                 {
-                    b.HasOne("Blog.Web.Models.Domain.BlogPost", null)
+                    b.HasOne("Blog.Web.Models.Domain.Post", null)
                         .WithMany()
-                        .HasForeignKey("BlogPostsId")
+                        .HasForeignKey("PostsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
