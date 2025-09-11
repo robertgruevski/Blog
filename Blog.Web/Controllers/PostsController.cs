@@ -105,5 +105,46 @@ namespace Blog.Web.Controllers
 
             return View(null);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(EditPostRequest editPostRequest)
+        {
+            var post = new Post
+            {
+                Id = editPostRequest.Id,
+                Heading = editPostRequest.Heading,
+                PageTitle = editPostRequest.PageTitle,
+                Content = editPostRequest.Content,
+                ShortDescription = editPostRequest.ShortDescription,
+                FeaturedImageUrl = editPostRequest.FeaturedImageUrl,
+                UrlHandle = editPostRequest.UrlHandle,
+                PublishedDate = editPostRequest.PublishedDate,
+                Author = editPostRequest.Author,
+                Visible = editPostRequest.Visible
+            };
+
+            var selectedTags = new List<Tag>();
+            foreach (var selectedTag in editPostRequest.SelectedTags)
+            {
+                if(Guid.TryParse(selectedTag, out var tag))
+                {
+                    var foundTag = await tagRepository.GetAsync(tag);
+                    if(foundTag is not null)
+                    {
+                        selectedTags.Add(foundTag);
+                    }
+                }
+            }
+
+            post.Tags = selectedTags;
+
+            var updatedPost = await postRepository.UpdateAsync(post);
+            if(updatedPost is not null)
+            {
+                return RedirectToAction(nameof(List));
+            }
+
+            return RedirectToAction(nameof(Edit));
+        }
     }
 }

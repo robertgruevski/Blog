@@ -31,9 +31,31 @@ namespace Blog.Web.Repositories
 
         public async Task<Post?> GetAsync(Guid id) => await context.Posts.Include(x => x.Tags).FirstOrDefaultAsync(x => x.Id == id);
 
-        public Task<Post?> UpdateAsync(Post post)
+        public async Task<Post?> UpdateAsync(Post post)
         {
-            throw new NotImplementedException();
+            var existingPost = await context.Posts
+                .Include(x=>x.Tags)
+                .FirstOrDefaultAsync(x => x.Id == post.Id);
+
+            if(existingPost is not null)
+            {
+                existingPost.Id = post.Id;
+                existingPost.Heading = post.Heading;
+                existingPost.PageTitle = post.PageTitle;
+                existingPost.Content = post.Content;
+                existingPost.ShortDescription = post.ShortDescription;
+                existingPost.FeaturedImageUrl = post.FeaturedImageUrl;
+                existingPost.UrlHandle = post.UrlHandle;
+                existingPost.PublishedDate = post.PublishedDate;
+                existingPost.Author = post.Author;
+                existingPost.Visible = post.Visible;
+                existingPost.Tags = post.Tags;
+
+                await context.SaveChangesAsync();
+                return existingPost;
+            }
+
+            return null;
         }
     }
 }
