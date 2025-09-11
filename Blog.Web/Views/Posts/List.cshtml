@@ -2,45 +2,52 @@
 
 <div class="bg-secondary bg-opacity-10 py-2">
 	<div class="container">
-		<h1>All Posts</h1>
+		<h1>Posts</h1>
 	</div>
 </div>
 
 <div class="container py-5">
-	<table class="table table-striped">
-		<thead>
-			<tr>
-				<td>Id</td>
-				<td>Heading</td>
-				<td>Tags</td>
-				<td></td>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach (var post in Model)
-			{
+	@if (Model is not null && Model.Any())
+	{
+		<table class="table table-striped">
+			<thead>
 				<tr>
-					<td>@post.Id</td>
-					<td>@post.Heading</td>
-					<td>
-						<div class="d-flex">
-							@foreach (var tag in post.Tags)
-							{
-								<span class="badge bg-secondary me-1">@tag.Name</span>
-							}
-						</div>
-					</td>
-					<td>
-						<a class="btn btn-info"
-						   asp-area=""
-						   asp-controller="Posts"
-						   asp-action="Edit"
-						   asp-route-id="@post.Id">
-							Edit
-						</a>
-					</td>
+					<td>Id</td>
+					<td>Heading</td>
+					<td>Tags</td>
+					<td></td>
 				</tr>
-			}
-		</tbody>
-	</table>
+			</thead>
+			<tbody>
+				@foreach (var post in Model)
+				{
+					<tr>
+						<td>@post.Id</td>
+						<td>@post.Heading</td>
+						<td>
+							<div class="d-flex">
+								@foreach (var tag in post.Tags)
+								{
+									<span class="badge bg-secondary me-1">@tag.Name</span>
+								}
+							</div>
+						</td>
+						<td>
+							<a class="btn btn-info"
+							   asp-area=""
+							   asp-controller="Posts"
+							   asp-action="Edit"
+							   asp-route-id="@post.Id">
+								Edit
+							</a>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	}
+	else
+	{
+		<p>No posts found!</p>
+	}
 </div>

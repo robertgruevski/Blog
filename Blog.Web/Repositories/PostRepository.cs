@@ -22,9 +22,19 @@ namespace Blog.Web.Repositories
             return post;
         }
 
-        public Task<Post?> DeleteAsync(Guid id)
+        public async Task<Post?> DeleteAsync(Guid id)
         {
-            throw new NotImplementedException();
+            var existingPost = await context.Posts.FindAsync(id);
+
+            if(existingPost is not null)
+            {
+                context.Remove(existingPost);
+                await context.SaveChangesAsync();
+
+                return existingPost;
+            }
+
+            return null;
         }
 
         public async Task<IEnumerable<Post>> GetAllAsync() => await context.Posts.Include(x => x.Tags).ToListAsync();

@@ -9,7 +9,7 @@
 <div class="container py-5">
 	@if (Model is not null)
 	{
-		<form method="post">		
+		<form method="post">
 			<div class="mb-3">
 				<label class="form-label">Id</label>
 				<input type="text" class="form-control" id="id" asp-for="Id" readonly />
@@ -68,13 +68,19 @@
 				</select>
 			</div>
 
-			<div class="mb-3">
-				<button type="submit" class="btn btn-dark">Update</button>
+			<div class="mb-3 d-flex">
+				<button type="submit" class="btn btn-dark me-2">Update</button>
+				<button type="submit" class="btn btn-danger"
+						asp-area=""
+						asp-controller="Posts"
+						asp-action="Delete">
+					Delete
+				</button>
 			</div>
 		</form>
 	}
 	else
 	{
-		<p>No posts found!</p>
+		<p>No post found!</p>
 	}
 </div>
