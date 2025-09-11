@@ -10,7 +10,7 @@
 </head>
 <body>
 	<header>
-		<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow mb-3">
+		<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow">
 			<div class="container-fluid">
 				<a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Blog.Web</a>
 				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -30,9 +30,9 @@
 								Admin
 							</a>
 							<ul class="dropdown-menu">
-								<li><a class="dropdown-item" href="#">Add Tag</a></li>
+								<li><a class="dropdown-item" asp-area="" asp-controller="Tags" asp-action="Add">Add Tag</a></li>
 								<li><hr class="dropdown-divider"></li>
-								<li><a class="dropdown-item" href="#">Add Post</a></li>
+								<li><a class="dropdown-item" asp-area="" asp-controller="Posts" asp-action="Add">Add Post</a></li>
 							</ul>
 						</li>
 					</ul>
