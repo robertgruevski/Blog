@@ -29,7 +29,10 @@ namespace Blog.Web.Controllers
             });
 			context.SaveChanges();
 
-            return View("Add");
+            return RedirectToAction(nameof(List));
         }
+
+		[HttpGet]
+		public IActionResult List() => View(context.Tags.ToList());
     }
 }
