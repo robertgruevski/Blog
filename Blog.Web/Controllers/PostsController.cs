@@ -65,7 +65,7 @@ namespace Blog.Web.Controllers
 
             await postRepository.AddAsync(post);
 
-            return RedirectToAction(nameof(Add));
+            return RedirectToAction(nameof(List));
         }
 
         [HttpGet]
