@@ -15,6 +15,7 @@ namespace Blog.Web.Controllers
         {
             this.imageRepository = imageRepository;
         }
+
         [HttpPost]
         public async Task<IActionResult> UploadAsync(IFormFile file)
         {
