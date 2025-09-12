@@ -1,4 +1,5 @@
-﻿using Blog.Web.Models.Domain;
+﻿using Blog.Web.Migrations;
+using Blog.Web.Models.Domain;
 using Blog.Web.Models.ViewModels;
 using Blog.Web.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -11,18 +12,42 @@ namespace Blog.Web.Controllers
     {
         private readonly ITagRepository tagRepository;
         private readonly IPostRepository postRepository;
+		private readonly ILikeRepository likeRepository;
 
-        public PostsController(ITagRepository tagRepository, IPostRepository postRepository)
+		public PostsController(ITagRepository tagRepository, IPostRepository postRepository, ILikeRepository likeRepository)
         {
             this.tagRepository = tagRepository;
             this.postRepository = postRepository;
-        }
+			this.likeRepository = likeRepository;
+		}
 
         [HttpGet]
         public async Task<IActionResult> Index(string urlHandle)
         {
             var post = await postRepository.GetByUrlHandleAsync(urlHandle);
-            return View(post);
+
+            if(post is not null)
+            {
+                var blogDetailsViewModel = new BlogDetailsViewModel
+                {
+                    Id = post.Id,
+                    Heading = post.Heading,
+                    PageTitle = post.PageTitle,
+                    Content = post.Content,
+                    ShortDescription = post.ShortDescription,
+                    FeaturedImageUrl = post.FeaturedImageUrl,
+                    UrlHandle = post.UrlHandle,
+                    PublishedDate = post.PublishedDate,
+                    Author = post.Author,
+                    Visible = post.Visible,
+                    Tags = post.Tags,
+                    TotalLikes = await likeRepository.GetTotalLikes(post.Id)
+                };
+
+                return View(blogDetailsViewModel);
+            }
+
+            return View();
         }
 
         [HttpGet]

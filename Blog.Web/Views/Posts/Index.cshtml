@@ -1,7 +1,12 @@
-﻿@model Blog.Web.Models.Domain.Post
+﻿@model Blog.Web.Models.ViewModels.BlogDetailsViewModel
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> signInManager
+@inject UserManager<IdentityUser> userManager
+
 @{
 	ViewData["Title"] = Model.PageTitle;
 }
+
 <div class="container my-5">
 	<div class="row justify-content-center">
 		<div class="col-12 col-lg-6">
@@ -12,6 +17,21 @@
 				<div class="d-flex justify-content-between mb-3">
 					<span class="text-secondary">@Model.Author</span>
 					<span class="text-secondary">@Model.PublishedDate.ToShortDateString()</span>
+				</div>
+
+				<div class="mb-3">
+					@if (signInManager.IsSignedIn(User))
+					{
+						<i id="btnLike" style="cursor: pointer" class="bi bi-hand-thumbs-up"></i>
+					}
+					@if (Model.TotalLikes > 1 || Model.TotalLikes == 0)
+					{
+						<span>@Model.TotalLikes Likes</span>
+					}
+					else if (Model.TotalLikes == 1)
+					{
+						<span>@Model.TotalLikes Like</span>
+					}
 				</div>
 
 				<div class="mb-3 d-flex">
@@ -35,3 +55,25 @@
 		</div>
 	</div>
 </div>
+
+@section Scripts {
+	<script>
+		const btnLikeElement = document.getElementById('btnLike');
+
+		async function addLikeForBlog() {
+			fetch('/api/Likes/Add', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Accept' : '*/*'
+				},
+				body: JSON.stringify({ 
+					postId: '@Model.Id', 
+					userId: '@userManager.GetUserId(User)'
+				})
+			}).then(console.log('Request finished'));
+		}
+
+		btnLikeElement.addEventListener('click', addLikeForBlog);
+	</script>
+}
