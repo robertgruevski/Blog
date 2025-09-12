@@ -1,10 +1,10 @@
-﻿@model List<Blog.Web.Models.Domain.Post>
+﻿@model Blog.Web.Models.ViewModels.HomeViewModel
 @{
 	ViewData["Title"] = "Home Page";
 }
 
-<div class="container col-xxl-8 px-4 py-5">
-	<div class="row align-items-center g-5 py-5">
+<div class="container col-xxl-8" style="height: 50vh;">
+	<div class="row align-items-center py-5">
 		<div class="col-12 col-lg-6">
 			<h1 class="display-5 fw-bold lh-1 mb-3">
 				The Dev Blog
@@ -19,19 +19,34 @@
 		<div class="col-12 col-lg-6">
 			<img class="d-block mx-lg-auto img-fluid"
 				 src="https://images.pexels.com/photos/262508/pexels-photo-262508.jpeg"
-				 alt="Dev Blogs" style="width: 300px;" />
+				 alt="Dev Blogs" style="max-width: 400px;" />
 		</div>
 	</div>
 </div>
 
 <div class="container">
-	<div class="row justify-content-center">
-		<div class="col-6">
-			@if (Model is not null && Model.Any())
+	<div class="row justify-content-center mb-5">
+		<div class="col-6 d-flex">
+			@if(Model is not null && Model.Tags.Any())
 			{
-				foreach (var post in Model)
+				foreach (var tag in Model.Tags)
 				{
-					<div class="mb-5 bg-light box-shadow p-5">
+					<span class="badge bg-dark me-1">@tag.Name</span>
+				}
+			}
+
+		</div>
+	</div>
+</div>
+
+<div class="container" style="max-width: 700px">
+	<div class="row justify-content-center">
+		<div class="col-12">
+			@if (Model is not null && Model.Posts.Any())
+			{
+				foreach (var post in Model.Posts)
+				{
+					<div class="mb-5 bg-light box-shadow">
 						<img src="@post.FeaturedImageUrl" alt="post.Heading" class="mb-2 d-block img-fluid" />
 						<h2 class="mb-4">@post.Heading</h2>
 						<p class="mb-4">
@@ -46,7 +61,13 @@
 							}
 						</p>
 						<p class="mb-4">@post.ShortDescription</p>
-						<a class="btn btn-dark" href="#">Read More</a>
+						<a class="btn btn-dark"
+						   asp-area=""
+						   asp-controller="Posts"
+						   asp-action="Index"
+						   asp-route-urlHandle="@post.UrlHandle">
+							Read More
+						</a>
 					</div>
 				}
 			}

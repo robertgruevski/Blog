@@ -26,7 +26,7 @@ namespace Blog.Web.Repositories
         {
             var existingPost = await context.Posts.FindAsync(id);
 
-            if(existingPost is not null)
+            if (existingPost is not null)
             {
                 context.Remove(existingPost);
                 await context.SaveChangesAsync();
@@ -44,10 +44,10 @@ namespace Blog.Web.Repositories
         public async Task<Post?> UpdateAsync(Post post)
         {
             var existingPost = await context.Posts
-                .Include(x=>x.Tags)
+                .Include(x => x.Tags)
                 .FirstOrDefaultAsync(x => x.Id == post.Id);
 
-            if(existingPost is not null)
+            if (existingPost is not null)
             {
                 existingPost.Id = post.Id;
                 existingPost.Heading = post.Heading;
@@ -67,5 +67,7 @@ namespace Blog.Web.Repositories
 
             return null;
         }
+
+        public async Task<Post?> GetByUrlHandleAsync(string urlHandle) => await context.Posts.Include(x => x.Tags).FirstOrDefaultAsync(x => x.UrlHandle == urlHandle);
     }
 }

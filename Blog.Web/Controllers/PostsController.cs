@@ -18,6 +18,13 @@ namespace Blog.Web.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> Index(string urlHandle)
+        {
+            var post = await postRepository.GetByUrlHandleAsync(urlHandle);
+            return View(post);
+        }
+
+        [HttpGet]
         public async Task<IActionResult> Add()
         {
             // Get tags from Repostiory
