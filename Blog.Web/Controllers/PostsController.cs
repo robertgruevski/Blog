@@ -1,6 +1,7 @@
 ﻿using Blog.Web.Models.Domain;
 using Blog.Web.Models.ViewModels;
 using Blog.Web.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -25,6 +26,7 @@ namespace Blog.Web.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Add()
         {
             // Get tags from Repostiory
@@ -43,6 +45,7 @@ namespace Blog.Web.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Add(AddPostRequest addPostRequest)
         {
             var post = new Post
@@ -76,6 +79,7 @@ namespace Blog.Web.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> List()
         {
             var posts = await postRepository.GetAllAsync();
@@ -84,6 +88,7 @@ namespace Blog.Web.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(Guid id)
         {
             var post = await postRepository.GetAsync(id);
@@ -114,6 +119,7 @@ namespace Blog.Web.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(EditPostRequest editPostRequest)
         {
             var post = new Post
@@ -155,6 +161,7 @@ namespace Blog.Web.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(EditPostRequest editPostRequest)
         {
             var deletedPost = await postRepository.DeleteAsync(editPostRequest.Id);
