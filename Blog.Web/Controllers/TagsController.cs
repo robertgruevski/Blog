@@ -24,6 +24,9 @@ namespace Blog.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Add(AddTagRequest addTagRequest)
         {
+            if (!ModelState.IsValid)
+                return View();
+
             await tagRepository.AddAsync(new Tag
             {
                 Name = addTagRequest.Name,
