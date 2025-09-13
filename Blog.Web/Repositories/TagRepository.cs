@@ -7,28 +7,45 @@ using System.Collections.Generic;
 
 namespace Blog.Web.Repositories
 {
-	public class TagRepository : ITagRepository
-	{
-		private readonly BlogDbContext context;
+    public class TagRepository : ITagRepository
+    {
+        private readonly BlogDbContext context;
 
-		public TagRepository(BlogDbContext context)
-		{
-			this.context = context;
-		}
-
-		public async Task<IEnumerable<Tag>> GetAllAsync() => await context.Tags.ToListAsync();
-
-		public async Task<Tag?> GetAsync(Guid id) => await context.Tags.FirstOrDefaultAsync(x => x.Id == id);
-
-		public async Task<Tag> AddAsync(Tag tag)
-		{
-            await context.Tags.AddAsync(tag);
-            await context.SaveChangesAsync();
-			return tag;
+        public TagRepository(BlogDbContext context)
+        {
+            this.context = context;
         }
 
-		public async Task<Tag?> DeleteAsync(Guid id)
-		{
+        public async Task<IEnumerable<Tag>> GetAllAsync(string? searchQuery = null)
+        {
+            var query = context.Tags.AsQueryable();
+
+            // Filtering
+            if (!string.IsNullOrWhiteSpace(searchQuery))
+            {
+                query = query.Where(x =>
+                    x.Name.Contains(searchQuery) ||
+                    x.DisplayName.Contains(searchQuery));
+            }
+            // Sorting
+
+            // Pagination
+
+
+            return await query.ToListAsync();
+        }
+
+        public async Task<Tag?> GetAsync(Guid id) => await context.Tags.FirstOrDefaultAsync(x => x.Id == id);
+
+        public async Task<Tag> AddAsync(Tag tag)
+        {
+            await context.Tags.AddAsync(tag);
+            await context.SaveChangesAsync();
+            return tag;
+        }
+
+        public async Task<Tag?> DeleteAsync(Guid id)
+        {
             var existingTag = await context.Tags
                 .FirstOrDefaultAsync(x => x.Id == id);
 
@@ -37,28 +54,28 @@ namespace Blog.Web.Repositories
                 context.Tags.Remove(existingTag);
                 await context.SaveChangesAsync();
 
-				return existingTag;
+                return existingTag;
             }
 
-			return null;
+            return null;
         }
 
-		public async Task<Tag?> UpdateAsync(Tag tag)
-		{
+        public async Task<Tag?> UpdateAsync(Tag tag)
+        {
             var existingTag = await context.Tags
                 .FirstOrDefaultAsync(x => x.Id == tag.Id);
 
-			if (existingTag is not null)
-			{
-				existingTag.Name = tag.Name;
-				existingTag.DisplayName = tag.DisplayName;
+            if (existingTag is not null)
+            {
+                existingTag.Name = tag.Name;
+                existingTag.DisplayName = tag.DisplayName;
 
-				await context.SaveChangesAsync();
+                await context.SaveChangesAsync();
 
-				return existingTag;
-			}
+                return existingTag;
+            }
 
-			return null;
+            return null;
         }
-	}
+    }
 }

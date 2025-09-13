@@ -39,7 +39,12 @@ namespace Blog.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> List() => View(await tagRepository.GetAllAsync());
+        public async Task<IActionResult> List(string? searchQuery)
+        {
+            ViewBag.SearchQuery = searchQuery;
+            var tags = await tagRepository.GetAllAsync(searchQuery);
+            return View(tags);
+        }
 
         [HttpGet]
         public async Task<IActionResult> Edit(Guid id)
