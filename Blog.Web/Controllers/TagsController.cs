@@ -39,10 +39,14 @@ namespace Blog.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> List(string? searchQuery)
+        public async Task<IActionResult> List(string? searchQuery, string? sortBy, string? sortDirection)
         {
             ViewBag.SearchQuery = searchQuery;
-            var tags = await tagRepository.GetAllAsync(searchQuery);
+            ViewBag.SortBy = sortBy;
+            ViewBag.SortDirection = sortDirection;
+
+            var tags = await tagRepository.GetAllAsync(searchQuery, sortBy, sortDirection);
+
             return View(tags);
         }
 

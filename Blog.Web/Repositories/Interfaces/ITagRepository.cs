@@ -4,7 +4,7 @@ namespace Blog.Web.Repositories.Interfaces
 {
 	public interface ITagRepository
 	{
-		Task<IEnumerable<Tag>> GetAllAsync(string? searchQuery = null);
+		Task<IEnumerable<Tag>> GetAllAsync(string? searchQuery = null, string? sortBy = null, string? sortDirection = null);
 		Task<Tag?> GetAsync(Guid id);
 		Task<Tag> AddAsync(Tag id);
 		Task<Tag?> UpdateAsync(Tag tag);
