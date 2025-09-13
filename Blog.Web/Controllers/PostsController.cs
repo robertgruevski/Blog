@@ -16,15 +16,17 @@ namespace Blog.Web.Controllers
         private readonly ILikeRepository likeRepository;
         private readonly SignInManager<IdentityUser> signInManager;
         private readonly UserManager<IdentityUser> userManager;
+		private readonly ICommentRepository commentRepository;
 
-        public PostsController(ITagRepository tagRepository, IPostRepository postRepository, ILikeRepository likeRepository, SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager)
+		public PostsController(ITagRepository tagRepository, IPostRepository postRepository, ILikeRepository likeRepository, SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, ICommentRepository commentRepository)
         {
             this.tagRepository = tagRepository;
             this.postRepository = postRepository;
             this.likeRepository = likeRepository;
             this.signInManager = signInManager;
             this.userManager = userManager;
-        }
+			this.commentRepository = commentRepository;
+		}
 
         [HttpGet]
         public async Task<IActionResult> Index(string urlHandle)
@@ -66,6 +68,25 @@ namespace Blog.Web.Controllers
                 });
             }
 
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Index(BlogDetailsViewModel blogDetailsViewModel)
+        {
+            if(signInManager.IsSignedIn(User))
+            {
+                var domainModel = new Comment
+                {
+                    PostId = blogDetailsViewModel.Id,
+                    Description = blogDetailsViewModel.CommentDescription,
+                    UserId = Guid.Parse(userManager.GetUserId(User)),
+                    DateAdded = DateTime.Now
+                };
+
+                await commentRepository.AddAsync(domainModel);
+                return RedirectToAction("Index", "Home", new { urlHandle = blogDetailsViewModel.UrlHandle });
+            }
             return View();
         }
 
