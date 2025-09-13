@@ -1,4 +1,6 @@
-﻿namespace Blog.Web.Models.ViewModels
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Blog.Web.Models.ViewModels
 {
 	public class AddTagRequest
 	{

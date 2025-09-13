@@ -11,12 +11,12 @@ namespace Blog.Web.Controllers
     [Authorize(Roles = "Admin")]
     public class TagsController : Controller
     {
-		private readonly ITagRepository tagRepository;
+        private readonly ITagRepository tagRepository;
 
-		public TagsController(ITagRepository tagRepository)
+        public TagsController(ITagRepository tagRepository)
         {
-			this.tagRepository = tagRepository;
-		}
+            this.tagRepository = tagRepository;
+        }
 
         [HttpGet]
         public IActionResult Add() => View();
@@ -24,6 +24,8 @@ namespace Blog.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Add(AddTagRequest addTagRequest)
         {
+            ValidateAddTagRequest(addTagRequest);
+
             if (!ModelState.IsValid)
                 return View();
 
@@ -85,13 +87,26 @@ namespace Blog.Web.Controllers
         public async Task<IActionResult> Delete(EditTagRequest editTagRequest)
         {
             var deletedTag = await tagRepository.DeleteAsync(editTagRequest.Id);
-            
-            if(deletedTag is not null)
+
+            if (deletedTag is not null)
             {
                 return RedirectToAction(nameof(List));
             }
 
             return RedirectToAction(nameof(Edit), new { id = editTagRequest.Id });
         }
+
+        #region Private Methods
+
+        private void ValidateAddTagRequest(AddTagRequest addTagRequest)
+        {
+            if (addTagRequest.Name is not null && addTagRequest.DisplayName is not null)
+            {
+                if (addTagRequest.Name == addTagRequest.DisplayName)
+                    ModelState.AddModelError("DisplayName", "Name cannot be the same as Display Name.");
+            }
+        }
+
+        #endregion
     }
 }

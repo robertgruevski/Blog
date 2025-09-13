@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 
 namespace Blog.Web.Models.ViewModels
 {
@@ -13,11 +14,7 @@ namespace Blog.Web.Models.ViewModels
         public DateTime PublishedDate { get; set; }
         public string Author { get; set; }
         public bool Visible { get; set; }
-
-		// Display the Tags
 		public IEnumerable<SelectListItem> Tags { get; set; }
-
-        // Collect Tag
         public string[] SelectedTags { get; set; } = Array.Empty<string>();
 	}
 }
