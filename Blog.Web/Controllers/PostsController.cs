@@ -3,6 +3,7 @@ using Blog.Web.Models.Domain;
 using Blog.Web.Models.ViewModels;
 using Blog.Web.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -12,23 +13,42 @@ namespace Blog.Web.Controllers
     {
         private readonly ITagRepository tagRepository;
         private readonly IPostRepository postRepository;
-		private readonly ILikeRepository likeRepository;
+        private readonly ILikeRepository likeRepository;
+        private readonly SignInManager<IdentityUser> signInManager;
+        private readonly UserManager<IdentityUser> userManager;
 
-		public PostsController(ITagRepository tagRepository, IPostRepository postRepository, ILikeRepository likeRepository)
+        public PostsController(ITagRepository tagRepository, IPostRepository postRepository, ILikeRepository likeRepository, SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager)
         {
             this.tagRepository = tagRepository;
             this.postRepository = postRepository;
-			this.likeRepository = likeRepository;
-		}
+            this.likeRepository = likeRepository;
+            this.signInManager = signInManager;
+            this.userManager = userManager;
+        }
 
         [HttpGet]
         public async Task<IActionResult> Index(string urlHandle)
         {
+            var liked = false;
             var post = await postRepository.GetByUrlHandleAsync(urlHandle);
 
-            if(post is not null)
+            if (post is not null)
             {
-                var blogDetailsViewModel = new BlogDetailsViewModel
+                if (signInManager.IsSignedIn(User))
+                {
+                    var likesForBlog = await likeRepository.GetLikesForBlog(post.Id);
+
+                    var userId = userManager.GetUserId(User);
+
+                    if (userId is not null)
+                    {
+                        var likesFromUser = likesForBlog.FirstOrDefault(x => x.UserId == Guid.Parse(userId));
+                        liked = likesFromUser is not null;
+                    }
+
+                }
+
+                return View(new BlogDetailsViewModel
                 {
                     Id = post.Id,
                     Heading = post.Heading,
@@ -41,10 +61,9 @@ namespace Blog.Web.Controllers
                     Author = post.Author,
                     Visible = post.Visible,
                     Tags = post.Tags,
-                    TotalLikes = await likeRepository.GetTotalLikes(post.Id)
-                };
-
-                return View(blogDetailsViewModel);
+                    TotalLikes = await likeRepository.GetTotalLikes(post.Id),
+                    Liked = liked
+                });
             }
 
             return View();
@@ -164,10 +183,10 @@ namespace Blog.Web.Controllers
             var selectedTags = new List<Tag>();
             foreach (var selectedTag in editPostRequest.SelectedTags)
             {
-                if(Guid.TryParse(selectedTag, out var tag))
+                if (Guid.TryParse(selectedTag, out var tag))
                 {
                     var foundTag = await tagRepository.GetAsync(tag);
-                    if(foundTag is not null)
+                    if (foundTag is not null)
                     {
                         selectedTags.Add(foundTag);
                     }
@@ -177,7 +196,7 @@ namespace Blog.Web.Controllers
             post.Tags = selectedTags;
 
             var updatedPost = await postRepository.UpdateAsync(post);
-            if(updatedPost is not null)
+            if (updatedPost is not null)
             {
                 return RedirectToAction(nameof(List));
             }
@@ -191,7 +210,7 @@ namespace Blog.Web.Controllers
         {
             var deletedPost = await postRepository.DeleteAsync(editPostRequest.Id);
 
-            if(deletedPost is not null)
+            if (deletedPost is not null)
             {
                 return RedirectToAction(nameof(List));
             }

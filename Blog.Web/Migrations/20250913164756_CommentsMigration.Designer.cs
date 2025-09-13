@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Blog.Web.Migrations
 {
     [DbContext(typeof(BlogDbContext))]
-    [Migration("20250912221007_Likes")]
-    partial class Likes
+    [Migration("20250913164756_CommentsMigration")]
+    partial class CommentsMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,32 @@ namespace Blog.Web.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("Blog.Web.Models.Domain.Comment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("DateAdded")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("PostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostId");
+
+                    b.ToTable("Comments");
+                });
 
             modelBuilder.Entity("Blog.Web.Models.Domain.Like", b =>
                 {
@@ -123,6 +149,15 @@ namespace Blog.Web.Migrations
                     b.ToTable("PostTag");
                 });
 
+            modelBuilder.Entity("Blog.Web.Models.Domain.Comment", b =>
+                {
+                    b.HasOne("Blog.Web.Models.Domain.Post", null)
+                        .WithMany("Comments")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Blog.Web.Models.Domain.Like", b =>
                 {
                     b.HasOne("Blog.Web.Models.Domain.Post", null)
@@ -149,6 +184,8 @@ namespace Blog.Web.Migrations
 
             modelBuilder.Entity("Blog.Web.Models.Domain.Post", b =>
                 {
+                    b.Navigation("Comments");
+
                     b.Navigation("Likes");
                 });
 #pragma warning restore 612, 618
