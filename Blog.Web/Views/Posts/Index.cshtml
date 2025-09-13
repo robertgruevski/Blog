@@ -1,4 +1,4 @@
-﻿@model Blog.Web.Models.ViewModels.BlogDetailsViewModel
+﻿@model Blog.Web.Models.ViewModels.PostDetailsViewModel
 @using Microsoft.AspNetCore.Identity
 @inject SignInManager<IdentityUser> signInManager
 @inject UserManager<IdentityUser> userManager
@@ -49,7 +49,7 @@
 				<img src="@Model.FeaturedImageUrl" class="d-block img-fluid mb-3"
 					 alt="@Model.Heading" />
 
-				<div class="mb-3 blog-details-content">
+				<div class="mb-3 post-details-content">
 					@Html.Raw(Model.Content)
 				</div>
 
@@ -75,6 +75,23 @@
 						}
 					</div>
 					<div class="card-body">
+						@if (Model.Comments is not null && Model.Comments.Any())
+						{
+							@foreach (var comment in Model.Comments.OrderByDescending(x => x.DateAdded))
+							{
+								<div class="card mb-3">
+									<div class="card-body">
+										<div>
+											@comment.Description
+										</div>
+										<div class="d-flex justify-content-between">
+											<span class="text-secondary">@comment.UserName</span>
+											<span class="text-secondary">@comment.DateAdded.ToShortDateString()</span>
+										</div>
+									</div>
+								</div>
+							}
+						}
 					</div>
 				</div>
 

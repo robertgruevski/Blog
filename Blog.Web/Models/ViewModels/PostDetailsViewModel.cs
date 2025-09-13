@@ -2,7 +2,7 @@
 
 namespace Blog.Web.Models.ViewModels
 {
-	public class BlogDetailsViewModel
+	public class PostDetailsViewModel
 	{
         public Guid Id { get; set; }
         public string Heading { get; set; }
@@ -18,5 +18,6 @@ namespace Blog.Web.Models.ViewModels
 		public int TotalLikes { get; set; }
 		public bool Liked { get; set; }
 		public string CommentDescription { get; set; }
+		public IEnumerable<PostComment> Comments { get; set; }
 	}
 }

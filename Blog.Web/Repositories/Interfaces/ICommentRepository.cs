@@ -5,5 +5,7 @@ namespace Blog.Web.Repositories.Interfaces
 	public interface ICommentRepository
 	{
 		Task<Comment> AddAsync(Comment comment);
+
+		Task<IEnumerable<Comment>> GetByPostIdAsync(Guid postId);
 	}
 }

@@ -38,19 +38,33 @@ namespace Blog.Web.Controllers
             {
                 if (signInManager.IsSignedIn(User))
                 {
-                    var likesForBlog = await likeRepository.GetLikesForBlog(post.Id);
+                    var likesForPost = await likeRepository.GetLikesForBlog(post.Id);
 
                     var userId = userManager.GetUserId(User);
 
                     if (userId is not null)
                     {
-                        var likesFromUser = likesForBlog.FirstOrDefault(x => x.UserId == Guid.Parse(userId));
+                        var likesFromUser = likesForPost.FirstOrDefault(x => x.UserId == Guid.Parse(userId));
                         liked = likesFromUser is not null;
                     }
 
                 }
 
-                return View(new BlogDetailsViewModel
+                var postCommentsDomainModel = await commentRepository.GetByPostIdAsync(post.Id);
+
+                var postCommentsForView = new List<PostComment>();
+
+                foreach (var comment in postCommentsDomainModel)
+                {
+                    postCommentsForView.Add(new PostComment
+                    {
+                        Description = comment.Description,
+                        DateAdded = comment.DateAdded,
+                        UserName = (await userManager.FindByIdAsync(comment.UserId.ToString())).UserName
+                    });
+                }
+
+                return View(new PostDetailsViewModel
                 {
                     Id = post.Id,
                     Heading = post.Heading,
@@ -64,7 +78,8 @@ namespace Blog.Web.Controllers
                     Visible = post.Visible,
                     Tags = post.Tags,
                     TotalLikes = await likeRepository.GetTotalLikes(post.Id),
-                    Liked = liked
+                    Liked = liked,
+                    Comments = postCommentsForView
                 });
             }
 
@@ -72,20 +87,20 @@ namespace Blog.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Index(BlogDetailsViewModel blogDetailsViewModel)
+        public async Task<IActionResult> Index(PostDetailsViewModel postDetailsViewModel)
         {
             if(signInManager.IsSignedIn(User))
             {
                 var domainModel = new Comment
                 {
-                    PostId = blogDetailsViewModel.Id,
-                    Description = blogDetailsViewModel.CommentDescription,
+                    PostId = postDetailsViewModel.Id,
+                    Description = postDetailsViewModel.CommentDescription,
                     UserId = Guid.Parse(userManager.GetUserId(User)),
                     DateAdded = DateTime.Now
                 };
 
                 await commentRepository.AddAsync(domainModel);
-                return RedirectToAction("Index", "Home", new { urlHandle = blogDetailsViewModel.UrlHandle });
+                return RedirectToAction("Index", "Posts", new { urlHandle = postDetailsViewModel.UrlHandle });
             }
             return View();
         }
