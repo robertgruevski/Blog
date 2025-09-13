@@ -16,7 +16,7 @@ namespace Blog.Web.Repositories
             this.context = context;
         }
 
-        public async Task<IEnumerable<Tag>> GetAllAsync(string? searchQuery, string? sortBy, string? sortDirection)
+        public async Task<IEnumerable<Tag>> GetAllAsync(string? searchQuery, string? sortBy, string? sortDirection, int pageSize, int pageNumber)
         {
             var query = context.Tags.AsQueryable();
 
@@ -44,6 +44,8 @@ namespace Blog.Web.Repositories
             }
 
             // Pagination
+            var skipResults = (pageNumber - 1) * pageSize;
+            query = query.Skip(skipResults).Take(pageSize);
 
             return await query.ToListAsync();
         }
@@ -90,5 +92,7 @@ namespace Blog.Web.Repositories
 
             return null;
         }
-    }
+
+		public async Task<int> CountAsync() => await context.Tags.CountAsync();
+	}
 }
